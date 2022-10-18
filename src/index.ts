@@ -1,3 +1,12 @@
+import { time } from 'console';
+import { deleteAllCookies, deleteCookie, getCookieValue, setCookie } from 'cookies-utils';
+import { LISTA_CURSOS } from './mock/cursos.mock';
+import { Curso } from './models/Curso';
+import { Estudiante } from './models/Estudiante';
+import { ITarea, Nivel } from './models/interfaces/ITarea';
+import { Programar } from './models/interfaces/Programar';
+import { Trabajador, Jefe } from './models/Persona';
+
 console.log('Hola Ariel');
 console.log('Adiós afg');
 
@@ -432,8 +441,244 @@ console.log(generatorSaga.next().value); // 2 (lo ha hecho el worker)
 console.log(generatorSaga.next().value); // 3 (lo ha hecho el worker)
 console.log(generatorSaga.next().value); // 4 (lo ha hecho el worker)
 
+//** */ Sobrecarga de funciones
+
+function mostrarError(error: string | number): void{
+  console.log("Ha habido un error", error);
+}
+
+
+//**? */ Persistencia de datos
+
+// 1. LocalStorage -> Almacena los datos en el navegador (no se eliminan automáticamente)
+// 2. Session Storage -> La diferencia radica en la sesión del navegador. Los datos se persisten en la sesión del navegador
+// 3. Cookies ->Tiene una fecha de caducidad y también tienen un ámbito de URL
+
+// LocalStorage y Session Storage
+function guardar(): void{
+  localStorage.set("nombre", "Martín");
+}
+
+function leer(): void{
+  let nombre = localStorage.get("nombre")
+  let nombreSession = sessionStorage.get("nombre")
+}
+
+function borrarItem(item:string){
+  localStorage.removeItem(item);
+  sessionStorage.removeItem(item);
+}
+
+function borrarTodas():void{
+  localStorage.clear();
+  sessionStorage.clear();
+}
+
+
+// Cookies
+const cookieOptions = {
+  name: "usuario", // string,
+  value: "Martín", // string,
+  maxAge: 10 * 60, // optional number (value in seconds),
+  expires: new Date(2099, 10, 1), // optional Date,
+  path: "/", // optional string,
+};
+
+// Seteamos la Cookie
+// ? setCookie(cookieOptions)
+
+// Leer una Cookie
+// ? let cookieLeida = getCookieValue("usuario");
+
+// Eliminar
+// ? deleteCookie("usuario");
+
+//Eliminar todas las Cookies
+// ? deleteAllCookies();
+
+// Clase Temporizador
+
+class Temporizador{
+
+  public terminar?: (tiempo: number) => void;
+
+  public empezar(): void {
+
+    setTimeout(() => {
+
+      // Comprobamos que exista la fucnión terminar como callback
+      if(!this.terminar) return;
+      
+      // Cuando haya pasado el tiempo se ejecutará la función terminar
+      this.terminar(Date.now());
+    }, 10000)
+  }
+
+}
+
+const miTemporizador: Temporizador = new Temporizador();
+
+// Definir la función del callback a ejecutar cuando termine el tiempo
+miTemporizador.terminar = (tiempo: number) => {
+  console.log("Evento terminado en:", tiempo);
+}
+
+// Lanzamos el temporizador
+miTemporizador.empezar(); // Inicia el timeout y cuando termine, se ejecuta la función terminar()
+
+// setInterval(() => console.log("Tic"), 1000); // Imprimir "tic cadasegundo por consola"
+
+// Eliminar la ejecución de la función 
+delete miTemporizador.terminar;
+
+
+//** */ Clases **
+
+//** */ CLASES
+
+// Creamos un curso
+
+// const cursoTS: Curso = new Curso("TypeScript", 15);
+// const cursoJS: Curso = new Curso("JavaScript", 20);
+
+// const listadoCursos: Curso[] = [];
+
+// listadoCursos.push(cursoTS, cursoJS); // [Lista de cursos];
+
+// ? Usamos el MOCK
+const listaCursos: Curso[] = LISTA_CURSOS;
+
+
+// Creamos un estudiante
+
+const martin: Estudiante = new Estudiante("Ariel", listaCursos, "Fuentes");
+console.log(`${martin.nombre} estudia`);
+// Iteramos por cada uno de los cursos
+martin.cursos.forEach((curso: Curso) => {
+  console.log(`- ${curso.nombre} (${curso.horas} horas)`);  
+})
+
+const cursoAngular: Curso = new Curso("Angular", 40);
+
+martin.cursos.push(cursoAngular); // Añadimos el curso
+
+// Conocer las horas Estudiadas
+martin.horasEstudiadas; // number
 
 
 
 
+//** */ Saber la instancia de un objeto/variable
+// - TypeOf
+// - InstanceOf
 
+let fechaNacimiento = new Date(1991, 10, 10)
+
+if(fechaNacimiento instanceof Date){
+  console.log("Es una instancia de Date");
+}
+
+if(martin instanceof Estudiante){
+  console.log("Martin es un Estudiante");
+}
+
+
+//** Herencia y Polimorfismo */
+
+let trabajador1 = new Trabajador("Martín", "Flores", 30, 2000)
+let trabajador2 = new Trabajador("Pepe", "Flores", 30, 2000)
+let trabajador3 = new Trabajador("Juan", "Flores", 30, 2000)
+
+
+let jefe = new Jefe("Pablo", "García", 50);
+
+jefe.trabajadores.push(trabajador1, trabajador2, trabajador3);
+
+trabajador1.saludar(); //  especificado en Empleado
+jefe.saludar();//herencia de Persona
+
+jefe.trabajadores.forEach((trabajador:Trabajador) => {
+  trabajador.saludar(); // especificado en Trabajador
+});
+
+
+
+//** USO DE INTERFACES */
+
+let programar: ITarea = {
+  titulo: 'Programar en Typescript',
+  descripcion: 'Practicar con katas para aprender a programar con TS',
+  completada: false,
+  urgencia: Nivel.Urgente,
+  resumen: function (): string {
+    return `${this.titulo} - ${this.completada} - Nivel: ${this.urgencia}`
+  }
+}
+
+console.log(programar.resumen());
+
+
+// Tarea de Programación (implemente ITarea)
+
+let programarTS = new Programar("Typescript", "Tarea de programación en TS", false, Nivel.Bloqueante);
+console.log(programarTS);
+
+
+//** DECORADORES --> @  */
+
+// - Clases
+// - Parámetros
+// - Métodos
+// - Propiedades
+
+function Override(label: string){
+  return function (target:any, key:string){
+    Object.defineProperty(target, key, {
+      configurable: false,
+      get: () => label
+    })
+  }
+}
+
+class PruebaDecorador {
+  @Override('Prueba') // llamar a la función Override
+  nombre:string = "Martin"
+}
+
+let prueba =  new PruebaDecorador();
+console.log(prueba.nombre); // "Prueba" siempre va a ser devuelto a través del get()
+
+// Otra función para usarla como decorador
+function SoloLectura(target: any, key: string){
+  Object.defineProperty(target, key, {
+    writable: false
+  })
+}
+
+class PruebaSoloLectura{
+  @SoloLectura
+  nombre: string = '';
+
+}
+
+let pruebaLectura = new PruebaSoloLectura();
+pruebaLectura.nombre = "Martin";
+//console.log(pruebaLectura.nombre); // ==> Undefined, ya que no se le puede dar un valor (es solo lectura)
+
+// Decorador para parámetros de un método
+
+
+function mostrarPosicion(target:any, propertyKey:string, parameterIndex:number){
+  console.log("Posición", parameterIndex);
+}
+
+class PruebaMetodoDecorador {
+
+  prueba(a:string, @mostrarPosicion b:boolean){
+    console.log(b);
+  }
+
+}
+
+// Usamoe el método con el parámetro y su decorador
+new PruebaMetodoDecorador().prueba('Hola', false); 
