@@ -594,7 +594,6 @@ let jefe = new Jefe("Pablo", "García", 50);
 
 jefe.trabajadores.push(trabajador1, trabajador2, trabajador3);
 
-trabajador1.saludar(); //  especificado en Empleado
 jefe.saludar();//herencia de Persona
 
 jefe.trabajadores.forEach((trabajador:Trabajador) => {
@@ -631,54 +630,71 @@ console.log(programarTS);
 // - Métodos
 // - Propiedades
 
-function Override(label: string){
-  return function (target:any, key:string){
-    Object.defineProperty(target, key, {
-      configurable: false,
-      get: () => label
-    })
-  }
-}
+// function Override(label: string){
+//   return function (target:any, key:string){
+//     Object.defineProperty(target, key, {
+//       configurable: false,
+//       get: () => label
+//     })
+//   }
+// }
 
-class PruebaDecorador {
-  @Override('Prueba') // llamar a la función Override
-  nombre:string = "Martin"
-}
+// class PruebaDecorador {
+//   @Override('Prueba') // llamar a la función Override
+//   nombre:string = "Martin"
+// }
 
-let prueba =  new PruebaDecorador();
-console.log(prueba.nombre); // "Prueba" siempre va a ser devuelto a través del get()
+// let prueba =  new PruebaDecorador();
+// console.log(prueba.nombre); // "Prueba" siempre va a ser devuelto a través del get()
 
 // Otra función para usarla como decorador
-function SoloLectura(target: any, key: string){
-  Object.defineProperty(target, key, {
-    writable: false
-  })
-}
+// function SoloLectura(target: any, key: string){
+//   Object.defineProperty(target, key, {
+//     writable: false
+//   })
+// }
 
-class PruebaSoloLectura{
-  @SoloLectura
-  nombre: string = '';
+// class PruebaSoloLectura{
+//   @SoloLectura
+//   nombre: string = '';
 
-}
+// }
 
-let pruebaLectura = new PruebaSoloLectura();
-pruebaLectura.nombre = "Martin";
+// let pruebaLectura = new PruebaSoloLectura();
+// pruebaLectura.nombre = "Martin";
 //console.log(pruebaLectura.nombre); // ==> Undefined, ya que no se le puede dar un valor (es solo lectura)
 
 // Decorador para parámetros de un método
 
 
-function mostrarPosicion(target:any, propertyKey:string, parameterIndex:number){
-  console.log("Posición", parameterIndex);
-}
+// function mostrarPosicion(target:any, propertyKey:string, parameterIndex:number){
+//   console.log("Posición", parameterIndex);
+// }
 
-class PruebaMetodoDecorador {
+// class PruebaMetodoDecorador {
 
-  prueba(a:string, @mostrarPosicion b:boolean){
-    console.log(b);
-  }
+//   prueba(a:string, @mostrarPosicion b:boolean){
+//     console.log(b);
+//   }
 
-}
+// }
 
 // Usamoe el método con el parámetro y su decorador
-new PruebaMetodoDecorador().prueba('Hola', false); 
+// new PruebaMetodoDecorador().prueba('Hola', false); 
+
+
+//** PATRONES CREACIONALES */
+
+// const miPrimerSingleton = Singleton.getInstance();
+// const miSegundoSingleton = Singleton.getInstance();
+
+// Comprobar si ambos son iguales
+// if(miPrimerSingleton === miSegundoSingleton){
+//   console.log("Singleton funciona correctamente, ambas variables tienen la misma instancia");
+//   miPrimerSingleton.mostrarPorConsola();
+//   miSegundoSingleton.mostrarPorConsola();
+// }else {
+//   console.log("Error, las variables contienen distintas instancias");
+  
+// }
+
